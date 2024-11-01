@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, ActivityIndicator, Button, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import React, { useState } from 'react';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -38,11 +38,14 @@ const Login = () => {
 
     return (
         <View style={styles.container}>
-                <KeyboardAvoidingView behavior='padding'>
+            <View style={styles.innerContainer}>
+                <Image source={require('../../assets/hamster.png')} style={styles.logo} />
+                <Text style={styles.title}>Hamster Habits</Text>
                 <TextInput
                     value={email}
                     style={styles.input}
                     placeholder="Email"
+                    placeholderTextColor="#a6855d"
                     autoCapitalize="none"
                     onChangeText={(text) => setEmail(text)}
                 />
@@ -50,19 +53,24 @@ const Login = () => {
                     value={password}
                     style={styles.input}
                     placeholder="Password"
+                    placeholderTextColor="#a6855d"
                     secureTextEntry
                     autoCapitalize="none"
                     onChangeText={(text) => setPassword(text)}
                 />
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator size="large" color="#b79452" />
                 ) : (
                     <>
-                        <Button title="Login" onPress={signIn} />
-                        <Button title="Create account" onPress={signUp} />
+                        <TouchableOpacity style={styles.button} onPress={signIn}>
+                            <Text style={styles.buttonText}>Login</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.signUpButton]} onPress={signUp}>
+                            <Text style={styles.buttonText}>Create Account</Text>
+                        </TouchableOpacity>
                     </>
                 )}
-            </KeyboardAvoidingView>
+            </View>
         </View>
     );
 };
@@ -72,14 +80,54 @@ export default Login;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#f5e8c7',
+    },
+    innerContainer: {
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#d1a671',
+        marginHorizontal: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
+        paddingBottom: 40, // Añade más padding en la parte inferior
+    },
+    logo: {
+        width: 100,
+        height: 100,
+        marginBottom: 20,
+        resizeMode: 'contain',
+    },
+    title: {
+        fontSize: 28,
+        color: '#b97a3b',
+        fontWeight: 'bold',
+        marginBottom: 20,
     },
     input: {
-        width: '80%',
-        padding: 10,
+        width: '100%',
+        padding: 15,
         marginVertical: 10,
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
+        backgroundColor: '#f1d9b5',
+        borderRadius: 8,
+        color: '#3e2a15',
+    },
+    button: {
+        width: '100%',
+        backgroundColor: '#b79452',
+        paddingVertical: 12,
+        borderRadius: 8,
+        marginTop: 15,
+        alignItems: 'center',
+    },
+    signUpButton: {
+        backgroundColor: '#a6855d',
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontWeight: '600',
     },
 });
