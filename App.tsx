@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './app/screens/Login';
-import Detail from './app/screens/Detail';
+import AddHabits from './app/screens/AddHabits';
 import List from './app/screens/List';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -12,9 +12,31 @@ const InsideStack = createNativeStackNavigator();
 
 function InsideLayout() {
   return (
-    <InsideStack.Navigator initialRouteName="Habits">
-      <InsideStack.Screen name="Habits" component={List} />
-      <InsideStack.Screen name="Details" component={Detail} />
+    <InsideStack.Navigator 
+      initialRouteName="Habits"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#f5f5f5',
+        },
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}
+    >
+      <InsideStack.Screen 
+        name="Habits" 
+        component={List}
+        options={{
+          title: 'My Habits'
+        }}
+      />
+      <InsideStack.Screen 
+        name="AddHabit" 
+        component={AddHabits}
+        options={{
+          title: 'Add New Habit'
+        }}
+      />
     </InsideStack.Navigator>
   );
 }
