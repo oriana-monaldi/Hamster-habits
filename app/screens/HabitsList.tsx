@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
     collection,
     onSnapshot,
@@ -19,10 +21,7 @@ import {
     QuerySnapshot,
     DocumentData,
 } from "firebase/firestore";
-import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-// Definir interfaces para los tipos
 interface Habit {
     id: string;
     title: string;
@@ -106,9 +105,9 @@ const HabitsList: React.FC = () => {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
+            <View style={[styles.loadingContainer, styles.fullScreenBackground]}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={styles.loadingText}>Cargando hábitos...</Text>
+                <Text style={styles.loadingText}>Loading habits...</Text>
             </View>
         );
     }
@@ -133,96 +132,103 @@ const HabitsList: React.FC = () => {
                     onPress={() => navigation.navigate("EditHabit", { habitId: item.id })}
                     style={styles.actionButton}
                 >
-                    <Icon name="pencil" size={24} color="#4A90E2" />
+                    <Icon name="pencil" size={24} color="#000" />
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => handleDeleteHabit(item.id)}
                     style={styles.actionButton}
                 >
-                    <Icon name="delete" size={24} color="#FF4444" />
+                    <Icon name="delete" size={24} color="#000" />
                 </TouchableOpacity>
             </View>
         </View>
     );
 
     return (
-        <FlatList
-            data={habits}
-            renderItem={renderHabitItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContainer}
-        />
+        <View style={styles.fullScreenBackground}>
+            <FlatList
+                data={habits}
+                renderItem={renderHabitItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContainer}
+            />
+        </View>
     );
 };
+
 const styles = StyleSheet.create({
+    fullScreenBackground: {
+        flex: 1,
+        backgroundColor: '#f5e8c7',
+    },
     loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#666",
+        marginTop: 10,
+        fontSize: 16,
+        color: "#666",
     },
     listContainer: {
-    padding: 16,
+        padding: 16,
     },
     habitItem: {
-    backgroundColor: "#f1d9b5",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-    width: 0,
-    height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+        backgroundColor: "#f1d9b5",
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 12,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 3,
     },
     habitLeftSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        flex: 1,
     },
     priorityDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        marginRight: 12,
     },
     habitInfo: {
-    flex: 1,
+        flex: 1,
     },
     habitTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 4,
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#333",
+        marginBottom: 4,
     },
     habitDescription: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 2,
+        fontSize: 14,
+        color: "#666",
+        marginBottom: 2,
     },
     habitLevel: {
-    fontSize: 12,
-    color: "#0096FF",
+        fontSize: 12,
+        color: "#0096FF",
     },
     habitActions: {
-    flexDirection: "row",
-    alignItems: "center",
+        flexDirection: "row",
+        alignItems: "center",
     },
     actionButton: {
-    padding: 8,
-    marginLeft: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    borderRadius: 6,
+        padding: 8,
+        marginLeft: 8,
+        backgroundColor: "rgba(255, 255, 255, 0.3)",
+        borderRadius: 6,
     },
 });
 

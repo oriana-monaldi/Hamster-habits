@@ -78,7 +78,7 @@ const EditHabit: React.FC<EditHabitProps> = ({ route, navigation }) => {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#b97a3b" />
-                <Text style={styles.loadingText}>Cargando...</Text>
+                <Text style={styles.loadingText}>Loading...</Text>
             </View>
         );
     }
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#fff',
+        backgroundColor: '#f5e8c7',
     },
     loadingContainer: {
         flex: 1,

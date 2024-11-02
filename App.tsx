@@ -7,6 +7,7 @@ import EditHabit from './app/screens/EditHabits';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { FIREBASE_AUTH } from './FirebaseConfig';
+import { View, StyleSheet } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const InsideStack = createNativeStackNavigator();
@@ -17,10 +18,14 @@ function InsideLayout() {
       initialRouteName="Habits"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#d1a671',
         },
+        headerTintColor: '#ffffff',
         headerTitleStyle: {
           fontWeight: 'bold',
+        },
+        contentStyle: {
+          backgroundColor: '#f5e8c7', 
         },
       }}
     >
@@ -60,22 +65,37 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {user ? (
-          <Stack.Screen 
-            name="Inside" 
-            component={InsideLayout} 
-            options={{ headerShown: false }} 
-          />
-        ) : (
-          <Stack.Screen 
-            name="Login" 
-            component={Login} 
-            options={{ headerShown: false }} 
-          />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            contentStyle: {
+              backgroundColor: '#f5e8c7',
+            },
+          }}
+        >
+          {user ? (
+            <Stack.Screen 
+              name="Inside" 
+              component={InsideLayout} 
+              options={{ headerShown: false }} 
+            />
+          ) : (
+            <Stack.Screen 
+              name="Login" 
+              component={Login} 
+              options={{ headerShown: false }} 
+            />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5e8c7', 
+  },
+});

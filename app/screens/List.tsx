@@ -1,4 +1,3 @@
-// List.tsx
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { NavigationProp } from '@react-navigation/native';
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#f8f9fa', 
+        backgroundColor: '#f5e8c7',  
     },
     buttonContainer: {
         flexDirection: 'row', 
