@@ -78,15 +78,31 @@ const HabitsList: React.FC = () => {
         fetchHabits();
     }, [currentUser]);
 
-    const handleDeleteHabit = async (id: string): Promise<void> => {
-        try {
-            const habitRef = doc(FIRESTORE_DB, "habits", id);
-            await deleteDoc(habitRef);
-            Alert.alert("Success", "Habit deleted successfully");
-        } catch (error) {
-            console.error("Error deleting habit:", error);
-            Alert.alert("Error", "Failed to delete habit");
-        }
+    const handleDeleteHabit = (id: string): void => {
+        Alert.alert(
+            "Confirm Delete",
+            "Are you sure you want to delete this habit?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    onPress: async () => {
+                        try {
+                            const habitRef = doc(FIRESTORE_DB, "habits", id);
+                            await deleteDoc(habitRef);
+                            Alert.alert("Success", "Habit deleted successfully");
+                        } catch (error) {
+                            console.error("Error deleting habit:", error);
+                            Alert.alert("Error", "Failed to delete habit");
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
     };
 
     const getPriorityColor = (level: string): string => {
