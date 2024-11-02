@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, Modal, Platform } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, Modal, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { FIRESTORE_DB } from '../../FirebaseConfig';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
@@ -63,84 +63,88 @@ const EditHabit = ({ route, navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.label}>Title</Text>
-            <TextInput
-                style={styles.input}
-                value={title}
-                onChangeText={setTitle}
-                placeholder="Habit title"
-                placeholderTextColor="#999"
-            />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <Text style={styles.label}>Title</Text>
+                <TextInput
+                    style={styles.input}
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder="Habit title"
+                    placeholderTextColor="#999"
+                />
 
-            <Text style={styles.label}>Description</Text>
-            <TextInput
-                style={[styles.input, styles.textArea]}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Habit description"
-                placeholderTextColor="#999"
-                multiline
-                numberOfLines={4}
-            />
+                <Text style={styles.label}>Description</Text>
+                <TextInput
+                    style={[styles.input, styles.textArea]}
+                    value={description}
+                    onChangeText={setDescription}
+                    placeholder="Habit description"
+                    placeholderTextColor="#999"
+                    multiline
+                    numberOfLines={4}
+                />
 
-            <Text style={styles.label}>Priority Level</Text>
-            {Platform.OS === 'ios' ? (
-                <Picker
-                    selectedValue={level}
-                    onValueChange={(itemValue) => setLevel(itemValue)}
-                    style={styles.pickerIOS}
+                <Text style={styles.label}>Priority Level</Text>
+                {Platform.OS === 'ios' ? (
+                    <Picker
+                        selectedValue={level}
+                        onValueChange={(itemValue) => setLevel(itemValue)}
+                        style={styles.pickerIOS}
+                    >
+                        <Picker.Item label="High Priority" value="High" />
+                        <Picker.Item label="Medium Priority" value="Medium" />
+                        <Picker.Item label="Low Priority" value="Low" />
+                    </Picker>
+                ) : (
+                    <TouchableOpacity 
+                        style={styles.pickerButton}
+                        onPress={() => setModalVisible(true)}
+                    >
+                        <Text style={styles.pickerButtonText}>
+                            {level} Priority
+                        </Text>
+                    </TouchableOpacity>
+                )}
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
                 >
-                    <Picker.Item label="High Priority" value="High" />
-                    <Picker.Item label="Medium Priority" value="Medium" />
-                    <Picker.Item label="Low Priority" value="Low" />
-                </Picker>
-            ) : (
-                <TouchableOpacity 
-                    style={styles.pickerButton}
-                    onPress={() => setModalVisible(true)}
-                >
-                    <Text style={styles.pickerButtonText}>
-                        {level} Priority
-                    </Text>
+                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Select Priority Level</Text>
+                                {['High', 'Medium', 'Low'].map((priorityLevel) => (
+                                    <TouchableOpacity 
+                                        key={priorityLevel}
+                                        style={styles.modalButton}
+                                        onPress={() => {
+                                            setLevel(priorityLevel);
+                                            setModalVisible(false);
+                                        }}
+                                    >
+                                        <Text style={styles.modalButtonText}>{priorityLevel} Priority</Text>
+                                    </TouchableOpacity>
+                                ))}
+                                <TouchableOpacity 
+                                    style={styles.closeButton}
+                                    onPress={() => setModalVisible(false)}
+                                >
+                                    <Text style={styles.closeButtonText}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+
+                <TouchableOpacity style={styles.button} onPress={handleUpdateHabit}>
+                    <Text style={styles.buttonText}>Update Habit</Text>
                 </TouchableOpacity>
-            )}
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Select Priority Level</Text>
-                        {['High', 'Medium', 'Low'].map((priorityLevel) => (
-                            <TouchableOpacity 
-                                key={priorityLevel}
-                                style={styles.modalButton}
-                                onPress={() => {
-                                    setLevel(priorityLevel);
-                                    setModalVisible(false);
-                                }}
-                            >
-                                <Text style={styles.modalButtonText}>{priorityLevel} Priority</Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity 
-                            style={styles.closeButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.closeButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-
-            <TouchableOpacity style={styles.button} onPress={handleUpdateHabit}>
-                <Text style={styles.buttonText}>Update Habit</Text>
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 
