@@ -8,7 +8,8 @@ import {
     ScrollView,
     ActivityIndicator,
     Modal,
-    Platform  } from 'react-native';
+    Platform 
+} from 'react-native';
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
@@ -327,10 +328,14 @@ const styles = StyleSheet.create({
         height: 40, 
     },
     pickerIOS: {
-        height: '60%', 
         width: '100%',
         backgroundColor: '#f1d9b5',
-        color: '#3e2a15',
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 16,
+        borderColor: '#a6855d',
+        borderWidth: 1,
+        fontSize: 16,
     },
 });
 
