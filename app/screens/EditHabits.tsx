@@ -4,20 +4,41 @@ import { FIRESTORE_DB } from '../../FirebaseConfig';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { Picker } from '@react-native-picker/picker';
 
-const EditHabit = ({ route, navigation }) => {
+interface RouteParams {
+    habitId: string;
+}
+
+interface NavigationType {
+    goBack: () => void;
+}
+
+interface EditHabitProps {
+    route: {
+        params: RouteParams;
+    };
+    navigation: NavigationType;
+}
+
+interface HabitData {
+    title: string;
+    description: string;
+    level: string;
+}
+
+const EditHabit: React.FC<EditHabitProps> = ({ route, navigation }) => {
     const { habitId } = route.params;
-    const [loading, setLoading] = useState(true);
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [level, setLevel] = useState('Medium');
-    const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [title, setTitle] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
+    const [level, setLevel] = useState<string>('Medium');
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchHabit = async () => {
             try {
                 const habitDoc = await getDoc(doc(FIRESTORE_DB, 'habits', habitId));
                 if (habitDoc.exists()) {
-                    const habitData = habitDoc.data();
+                    const habitData = habitDoc.data() as HabitData;
                     setTitle(habitData.title);
                     setDescription(habitData.description);
                     setLevel(habitData.level);
@@ -32,7 +53,7 @@ const EditHabit = ({ route, navigation }) => {
         fetchHabit();
     }, [habitId]);
 
-    const handleUpdateHabit = async () => {
+    const handleUpdateHabit = async (): Promise<void> => {
         if (!title.trim() || !description.trim()) {
             Alert.alert('Error', 'Please fill in all fields');
             return;
@@ -89,7 +110,7 @@ const EditHabit = ({ route, navigation }) => {
                 {Platform.OS === 'ios' ? (
                     <Picker
                         selectedValue={level}
-                        onValueChange={(itemValue) => setLevel(itemValue)}
+                        onValueChange={(itemValue: string) => setLevel(itemValue)}
                         style={styles.pickerIOS}
                     >
                         <Picker.Item label="High Priority" value="High" />

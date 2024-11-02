@@ -1,14 +1,47 @@
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { FIRESTORE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
-import { collection, onSnapshot, doc, deleteDoc, query, where } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/native'; 
+import {
+    StyleSheet,
+    Text,
+    View,
+    FlatList,
+    ActivityIndicator,
+    Alert,
+    TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { FIRESTORE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
+import {
+    collection,
+    onSnapshot,
+    doc,
+    deleteDoc,
+    query,
+    where,
+    QuerySnapshot,
+    DocumentData,
+} from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const HabitsList = () => {
-    const [habits, setHabits] = useState([]);
-    const [loading, setLoading] = useState(true);
+// Definir interfaces para los tipos
+interface Habit {
+    id: string;
+    title: string;
+    description: string;
+    level: string;
+    userId: string;
+}
+
+type NavigationProps = {
+    navigate: (screen: string, params?: any) => void;
+};
+
+type PriorityLevel = 'high' | 'medium' | 'low' | 'hight';
+
+const HabitsList: React.FC = () => {
+    const [habits, setHabits] = useState<Habit[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const currentUser = FIREBASE_AUTH.currentUser;
-    const navigation = useNavigation(); 
+    const navigation = useNavigation<NavigationProps>();
 
     useEffect(() => {
         const fetchHabits = () => {
@@ -17,24 +50,28 @@ const HabitsList = () => {
                 return;
             }
 
-            const habitsRef = collection(FIRESTORE_DB, 'habits');
+            const habitsRef = collection(FIRESTORE_DB, "habits");
             const userHabitsQuery = query(
                 habitsRef,
-                where('userId', '==', currentUser.uid)
+                where("userId", "==", currentUser.uid)
             );
 
-            const unsubscribe = onSnapshot(userHabitsQuery, (snapshot) => {
-                const fetchedHabits = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                setHabits(fetchedHabits);
-                setLoading(false);
-            }, (error) => {
-                console.error('Error fetching habits:', error);
-                Alert.alert('Error', 'Failed to fetch habits. Please try again.');
-                setLoading(false);
-            });
+            const unsubscribe = onSnapshot(
+                userHabitsQuery,
+                (snapshot: QuerySnapshot<DocumentData>) => {
+                    const fetchedHabits = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    })) as Habit[];
+                    setHabits(fetchedHabits);
+                    setLoading(false);
+                },
+                (error: Error) => {
+                    console.error("Error fetching habits:", error);
+                    Alert.alert("Error", "Failed to fetch habits. Please try again.");
+                    setLoading(false);
+                }
+            );
 
             return () => unsubscribe();
         };
@@ -42,28 +79,28 @@ const HabitsList = () => {
         fetchHabits();
     }, [currentUser]);
 
-    const handleDeleteHabit = async (id) => {
+    const handleDeleteHabit = async (id: string): Promise<void> => {
         try {
-            const habitRef = doc(FIRESTORE_DB, 'habits', id);
+            const habitRef = doc(FIRESTORE_DB, "habits", id);
             await deleteDoc(habitRef);
-            Alert.alert('Success', 'Habit deleted successfully');
+            Alert.alert("Success", "Habit deleted successfully");
         } catch (error) {
-            console.error('Error deleting habit:', error);
-            Alert.alert('Error', 'Failed to delete habit');
+            console.error("Error deleting habit:", error);
+            Alert.alert("Error", "Failed to delete habit");
         }
     };
 
-    const getPriorityColor = (level) => {
-        switch (level.toLowerCase()) {
-            case 'high':
-            case 'hight':
-                return '#FF0000';
-            case 'medium':
-                return '#FFD700';
-            case 'low':
-                return '#32CD32';
+    const getPriorityColor = (level: string): string => {
+        switch (level.toLowerCase() as PriorityLevel) {
+            case "high":
+            case "hight":
+                return "#FF0000";
+            case "medium":
+                return "#FFD700";
+            case "low":
+                return "#32CD32";
             default:
-                return '#808080';
+                return "#808080";
         }
     };
 
@@ -76,10 +113,15 @@ const HabitsList = () => {
         );
     }
 
-    const renderHabitItem = ({ item }) => (
+    const renderHabitItem: React.FC<{ item: Habit }> = ({ item }) => (
         <View style={styles.habitItem}>
             <View style={styles.habitLeftSection}>
-                <View style={[styles.priorityDot, { backgroundColor: getPriorityColor(item.level) }]} />
+                <View
+                    style={[
+                        styles.priorityDot,
+                        { backgroundColor: getPriorityColor(item.level) },
+                    ]}
+                />
                 <View style={styles.habitInfo}>
                     <Text style={styles.habitTitle}>{item.title}</Text>
                     <Text style={styles.habitDescription}>{item.description}</Text>
@@ -87,17 +129,17 @@ const HabitsList = () => {
                 </View>
             </View>
             <View style={styles.habitActions}>
-                <TouchableOpacity 
-                    onPress={() => navigation.navigate('EditHabit', { habitId: item.id })} 
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("EditHabit", { habitId: item.id })}
                     style={styles.actionButton}
                 >
-                    <Text style={styles.actionIcon}>✏️</Text>
+                    <Icon name="pencil" size={24} color="#4A90E2" />
                 </TouchableOpacity>
-                <TouchableOpacity 
-                    onPress={() => handleDeleteHabit(item.id)} 
+                <TouchableOpacity
+                    onPress={() => handleDeleteHabit(item.id)}
                     style={styles.actionButton}
                 >
-                    <Text style={styles.actionIcon}>🗑️</Text>
+                    <Icon name="delete" size={24} color="#FF4444" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -107,82 +149,80 @@ const HabitsList = () => {
         <FlatList
             data={habits}
             renderItem={renderHabitItem}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
         />
     );
 };
-
 const styles = StyleSheet.create({
     loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     },
     loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-        color: '#666',
+    marginTop: 10,
+    fontSize: 16,
+    color: "#666",
     },
     listContainer: {
-        padding: 16,
+    padding: 16,
     },
     habitItem: {
-        backgroundColor: '#f1d9b5',
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 3,
+    backgroundColor: "#f1d9b5",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+    width: 0,
+    height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
     },
     habitLeftSection: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
     },
     priorityDot: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        marginRight: 12,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 12,
     },
     habitInfo: {
-        flex: 1,
+    flex: 1,
     },
     habitTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 4,
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 4,
     },
     habitDescription: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 2,
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 2,
     },
     habitLevel: {
-        fontSize: 12,
-        color: '#0096FF',
+    fontSize: 12,
+    color: "#0096FF",
     },
     habitActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     },
     actionButton: {
-        padding: 8,
-        marginLeft: 8,
-    },
-    actionIcon: {
-        fontSize: 20,
+    padding: 8,
+    marginLeft: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 6,
     },
 });
 
