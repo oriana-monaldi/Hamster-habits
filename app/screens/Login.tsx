@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity,
 import React, { useState } from 'react';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import Icon from 'react-native-vector-icons/MaterialIcons'; 
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); 
     const auth = FIREBASE_AUTH;
 
     const signIn = async () => {
@@ -29,7 +31,7 @@ const Login = () => {
             console.log(response);
         } catch (error) {
             console.log(error);
-            alert('Sign up failed: ');
+            alert('Invalid email format. Try again (e.g., name@example.com)');
         } finally {
             setLoading(false);
         }
@@ -48,15 +50,20 @@ const Login = () => {
                     autoCapitalize="none"
                     onChangeText={(text) => setEmail(text)}
                 />
-                <TextInput
-                    value={password}
-                    style={styles.input}
-                    placeholder="Password"
-                    placeholderTextColor="#a6855d"
-                    secureTextEntry
-                    autoCapitalize="none"
-                    onChangeText={(text) => setPassword(text)}
-                />
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        value={password}
+                        style={styles.passwordInput}
+                        placeholder="Password"
+                        placeholderTextColor="#a6855d"
+                        secureTextEntry={!showPassword}
+                        autoCapitalize="none"
+                        onChangeText={(text) => setPassword(text)}
+                    />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                        <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#a6855d" />
+                    </TouchableOpacity>
+                </View>
                 {loading ? (
                     <ActivityIndicator size="large" color="#b79452" />
                 ) : (
@@ -113,6 +120,25 @@ const styles = StyleSheet.create({
         backgroundColor: '#f1d9b5',
         borderRadius: 8,
         color: '#3e2a15',
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        borderColor: '#a6855d',
+        borderWidth: 1,
+        borderRadius: 8,
+        backgroundColor: '#f1d9b5',
+        paddingRight: 10, 
+    },
+    passwordInput: {
+        flex: 1,
+        padding: 15,
+        color: '#3e2a15',
+        borderRadius: 8,
+    },
+    eyeIcon: {
+        paddingHorizontal: 10,
     },
     button: {
         width: '100%',
