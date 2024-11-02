@@ -1,16 +1,29 @@
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { FIRESTORE_DB } from '../../FirebaseConfig';
-import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { FIRESTORE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
+import { collection, onSnapshot, doc, deleteDoc, query, where } from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native'; 
 
 const HabitsList = () => {
     const [habits, setHabits] = useState([]);
     const [loading, setLoading] = useState(true);
+    const currentUser = FIREBASE_AUTH.currentUser;
+    const navigation = useNavigation(); 
 
     useEffect(() => {
         const fetchHabits = () => {
+            if (!currentUser) {
+                setLoading(false);
+                return;
+            }
+
             const habitsRef = collection(FIRESTORE_DB, 'habits');
-            const unsubscribe = onSnapshot(habitsRef, (snapshot) => {
+            const userHabitsQuery = query(
+                habitsRef,
+                where('userId', '==', currentUser.uid)
+            );
+
+            const unsubscribe = onSnapshot(userHabitsQuery, (snapshot) => {
                 const fetchedHabits = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
@@ -22,10 +35,12 @@ const HabitsList = () => {
                 Alert.alert('Error', 'Failed to fetch habits. Please try again.');
                 setLoading(false);
             });
+
             return () => unsubscribe();
         };
+
         fetchHabits();
-    }, []);
+    }, [currentUser]);
 
     const handleDeleteHabit = async (id) => {
         try {
@@ -72,10 +87,16 @@ const HabitsList = () => {
                 </View>
             </View>
             <View style={styles.habitActions}>
-                <TouchableOpacity onPress={() => {}} style={styles.actionButton}>
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('EditHabit', { habitId: item.id })} 
+                    style={styles.actionButton}
+                >
                     <Text style={styles.actionIcon}>✏️</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDeleteHabit(item.id)} style={styles.actionButton}>
+                <TouchableOpacity 
+                    onPress={() => handleDeleteHabit(item.id)} 
+                    style={styles.actionButton}
+                >
                     <Text style={styles.actionIcon}>🗑️</Text>
                 </TouchableOpacity>
             </View>
@@ -107,8 +128,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     habitItem: {
-      backgroundColor: '#b79452', 
-
+        backgroundColor: '#f1d9b5',
         padding: 16,
         borderRadius: 8,
         marginBottom: 12,

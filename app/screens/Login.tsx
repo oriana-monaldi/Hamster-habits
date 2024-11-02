@@ -16,7 +16,7 @@ const Login = () => {
             console.log(response);
         } catch (error) {
             console.log(error);
-            alert('Sign in failed: ');
+            alert('This account does not exist');
         } finally {
             setLoading(false);
         }
@@ -27,7 +27,6 @@ const Login = () => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log(response);
-            alert('Check your emails');
         } catch (error) {
             console.log(error);
             alert('Sign up failed: ');
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         shadowOffset: { width: 0, height: 2 },
-        paddingBottom: 40, // Añade más padding en la parte inferior
+        paddingBottom: 40,
     },
     logo: {
         width: 100,

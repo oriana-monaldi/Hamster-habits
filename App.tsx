@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './app/screens/Login';
 import AddHabits from './app/screens/AddHabits';
 import List from './app/screens/List';
+import EditHabit from './app/screens/EditHabits';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { FIREBASE_AUTH } from './FirebaseConfig';
@@ -35,6 +36,13 @@ function InsideLayout() {
         component={AddHabits}
         options={{
           title: 'Add New Habit'
+        }}
+      />
+      <InsideStack.Screen 
+        name="EditHabit" 
+        component={EditHabit}
+        options={{
+          title: 'Edit Habit'
         }}
       />
     </InsideStack.Navigator>

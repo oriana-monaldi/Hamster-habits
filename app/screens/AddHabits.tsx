@@ -8,8 +8,7 @@ import {
     ScrollView,
     ActivityIndicator,
     Modal,
-    Platform 
-} from 'react-native';
+    Platform  } from 'react-native';
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { FIRESTORE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
