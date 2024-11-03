@@ -108,7 +108,6 @@ const HabitsList: React.FC = () => {
     const getPriorityColor = (level: string): string => {
         switch (level.toLowerCase() as PriorityLevel) {
             case "high":
-            case "hight":
                 return "#FF0000"; 
             case "medium":
                 return "#FFD700";
