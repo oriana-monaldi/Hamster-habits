@@ -15,13 +15,21 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.mateopolci.hamster",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5f3c6f71-6c0a-4621-889b-9bd75418f7eb"
+      }
     }
   }
 }
